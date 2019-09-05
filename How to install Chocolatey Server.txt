@@ -16,18 +16,22 @@ Directions:
 
 
 1. On the server, install Chocolatey by opening Powershell with Admin Rights and pasting the following: Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-2. Once chocolatey is installed, run choco install chocolatey.server
-3. Navigate to C:\tools\chocolatey.server\ folder and edit the permissions of the Web.Config. Add Domain Admins (or Administrators if not in an AD environment) and give them Modify rights so we can edit this file. Launch Notepad as an Administrator and then open the Web.Config file.
-4. Edit the Web.Config entries as follows:
+2. Edit installChocolateyServer.ps1 from Chocolatey-Resources and change YOUR_REPO_NAME to your preference and save
+3. Run installChocolateyServer.ps1
+4. Navigate to C:\tools\chocolatey.server\ folder and edit the permissions of the Web.Config. Add Domain Admins (or Administrators if not in an AD environment) and give them Modify rights so we can edit this file. Launch Notepad as an Administrator and then open the Web.Config file.
+5. Edit the Web.Config entries as follows:
    1. <user name="choco" password="rocks" /> - This is the default username and password for basic authentication for IIS and is not part of AD. You can either change these such that it will require the username and password for each software install/update in addition to Domain Admin rights, or simply delete it if you feel Domain Admin rights are good enough
    2. <requestLimits maxAllowedContentLength="2147482548" /> - This specifies the largest size package that may be uploaded to the chocolatey server. If you need to create packages OVER 2GB, then increase this value
    3. <add key="apiKey" value="chocolateyrocks" /> - This is a shared password that is used to upload packages to your repository. Change this to a different value. Note that this is sent in cleartext until you apply an SSL cert to the IIS server, and chocolatey will warn you of this each time you upload to it
-   4. <app key="packagePath" value="~/App_Data/Packages" /> - This is the default path to host packages. Change this to your dedicated drive for hosting Chocolatey packages, such as value="S:\Packages"
-   5. <add key="forceLocalChocolateyPackage" value="false" /> - Change this to true so that chocolatey packages will default to the local repository rather than online
+   4. <add key="packagesPath" value="~/App_Data/Packages" /> - This is the default path to host packages. Change this to your dedicated drive for hosting Chocolatey packages, such as value="S:\Packages"
+   5. <add key="forceLocalChocolateyPackage" value="false"/> - Change this to true so that chocolatey packages will default to the local repository rather than online
 1. Open Powershell with Admin rights and type iisreset to restart the webpage with this new config. Verify that you can get to your repository's webpage by going to: http://YOUR_REPOSITORY_NAME/ from the test client. You may need to troubleshoot Windows Firewall to allow access to this website. YOUR_REPOSITORY_NAME will be the DNS name of the chocolatey server
 2. Add the chocolatey installer package to the chocolatey repository by opening a Powershell prompt with Admin credentials and entering:
    1. choco push C:\ProgramData\chocolatey\lib\chocolatey\chocolatey.nupkg --source "http://YOUR_REPO/chocolatey" -k="YOUR_API_KEY" --force
-1. Copy and edit the installChocolateyFromOfflineRepo_Template.ps1 script to edit in your repository name, and the username and password you created during step 4 (if you didn't delete them). This script will install the chocolatey client from your internal repo, add your internal repo as a source, and then remove the official chocolatey repository, enabling a purely offline source to pull packages from
-2. Run your version of the installChocolateyFromOfflineRepo_Template.ps1 on the test client from an Admin Powershell console, and verify that it is installed by running Choco in the powershell client afterwards.
+1. Copy and edit the installChocolateyFromOfflineRepo_Template.ps1 script to edit in your repository name, and the username and password you created during step 4 (if you didn't delete them). This script will install the chocolatey client from your internal repo, add your internal repo as a source, and then remove the official chocolatey repository for clients that install chocolatey via the script. The chocolatey server should be the only computer with chocolatey that is able to pull from the official repo
+   1. Replace YOUR_REPO with the name assigned in step 2
+   2. Replace YOUR_USER with the username changed in step 5a
+   3. Replace YOUR_PASSWORD with the password for your username changed in step 5a
+1. Run your version of the installChocolateyFromOfflineRepo_Template.ps1 on the test client from an Admin Powershell console, and verify that it is installed by running Choco in the powershell client afterwards.
    1. From here, there is a variety of methods to remotely run/install the script to the rest of the clients you'd need the chocolatey client installed on, such as setting up a GPO that runs a task to run your script, a RunOnce Registry entry to run it, or manually running it via PSSession. If you deploy to many clients at once, it's recommended adding a random delay so that your chocolatey server isn't hit all at once
 1. From here, Chocolatey server is setup and ready to start serving internal packages. Check the 'How to create offline chocolatey installation packages' instructions
