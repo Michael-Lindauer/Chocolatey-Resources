@@ -1,4 +1,4 @@
-﻿$siteName = 'YOUR_REPO_NAME'
+﻿$siteName = 'YOUR_REPO'
 $appPoolName = 'ChocolateyServerAppPool'
 $sitePath = 'c:\tools\chocolatey.server'
 
