@@ -16,7 +16,7 @@ Directions:
 
 
 1. On the server, install Chocolatey by opening Powershell with Admin Rights and pasting the following: Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-2. Edit installChocolateyServer.ps1 from Chocolatey-Resources and change YOUR_REPO_NAME to your preference and save
+2. Edit installChocolateyServer.ps1 from Chocolatey-Resources and change YOUR_REPO to your preference and save
 3. Run installChocolateyServer.ps1
 4. Navigate to C:\tools\chocolatey.server\ folder and edit the permissions of the Web.Config. Add Domain Admins (or Administrators if not in an AD environment) and give them Modify rights so we can edit this file. Launch Notepad as an Administrator and then open the Web.Config file.
 5. Edit the Web.Config entries as follows:
